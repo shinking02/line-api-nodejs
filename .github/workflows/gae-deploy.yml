@@ -14,7 +14,6 @@ jobs:
         run: |
           echo "CHANNEL_ACCESS_TOKEN=${{ secrets.CHANNEL_ACCESS_TOKEN }}" > .env
           echo "CHANNEL_SECRET=${{ secrets.CHANNEL_SECRET }}" >> .env
-          echo "TEXT_FILE_PATH=${{ secrets.TEXT_FILE_PATH }}" >> .env
           echo "PORT=${{ secrets.PORT }}" >> .env
       - name: Deploy an App Engine app
         id: deploy-app

@@ -12,7 +12,7 @@ app.get('/', async (_: Request, res: Response): Promise<Response> => {
 });
 app.get('/message', async (_: Request, res: Response): Promise<Response> => {
   return res.status(200).send({
-    message: 'HTTPS'
+    message: 'Hello World with HTTPS(ESP32)!!!!'
   });
 });
 

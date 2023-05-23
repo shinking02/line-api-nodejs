@@ -16,6 +16,7 @@ const clientConfig: ClientConfig = config;
 const middlewareConfig: MiddlewareConfig = config;
 const client = new Client(clientConfig);
 const app: Application = express();
+let data = "";
 
 app.get("/", async(_req: Request, res: Response): Promise<Response> => {
     return res.status(200).send({
@@ -32,11 +33,18 @@ const textEventHandler = async(event: WebhookEvent): Promise<MessageAPIResponseB
         const { text } = event.message;
         if(text.charAt(0) === "/") {
             const command = text.substring(1);
+            if(command === "get") {
+                return {
+                    type: "text",
+                    text: `[${data}]がセットされています`
+                }
+            }
             return {
                 type: "text",
                 text: `入力された開発コマンド、${command}は未実装です`
             }
         }
+        data = text;
         return {
             type: "text",
             text: `[${text}]がセットされました`
@@ -58,6 +66,12 @@ app.post("/webhook", middleware(middlewareConfig), async(req: Request, res: Resp
         }
     }));
     return res.status(200).send();
+});
+
+app.get("/message", async(_req: Request, res: Response): Promise<Response> => {
+    return res.status(200).send({
+        message: data
+    });
 });
 
 app.listen(port, () => {

@@ -7,6 +7,3 @@ handlers:
   secure: always
   redirect_http_response_code: 301
   script: auto
-- url: /message
-  secure: optional
-  script: auto

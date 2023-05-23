@@ -33,6 +33,18 @@ const textEventHandler = async(event: WebhookEvent): Promise<MessageAPIResponseB
         const { text } = event.message;
         if(text.charAt(0) === "/") {
             const command = text.substring(1);
+            if(command === "help") {
+                return {
+                    type: "text",
+                    text: `/port: ポートを確認\n/help: コマンド一覧\n/get: セットされているテキストを確認`
+                }
+            }
+            if(command === "port") {
+                return {
+                    type: "text",
+                    text: `現在のポートは${port}です`
+                }
+            }
             if(command === "get") {
                 return {
                     type: "text",

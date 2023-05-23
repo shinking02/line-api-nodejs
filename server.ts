@@ -3,11 +3,13 @@ import { load } from 'ts-dotenv';
 const PORT = 8080;
 
 const app: Application = express();
-const a = process.env.BUCKET_NAME;
+const env = load({
+    TEST: String
+})
 app.get('/', async (_: Request, res: Response): Promise<Response> => {
   return res.status(200).send({
     message: 'Hello World!',
-    BUCKET_NAME: a
+    TEST: env.TEST
   });
 });
 

@@ -17,7 +17,7 @@ jobs:
         run: |
           echo "CHANNEL_ACCESS_TOKEN=${{ secrets.CHANNEL_ACCESS_TOKEN }}" > .env
           echo "CHANNEL_SECRET=${{ secrets.CHANNEL_SECRET }}" >> .env
-          echo "PORT=${{ secrets.PORT }}" >> .env
+          echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> .env
       - name: Deploy an App Engine app
         id: deploy-app
         uses: google-github-actions/deploy-appengine@v0.3.1

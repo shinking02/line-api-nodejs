@@ -44,9 +44,7 @@ const textEventHandler = async(event: WebhookEvent): Promise<MessageAPIResponseB
             if(command === "status") {
                 return {
                     type: "text",
-                    text:  `バージョン: ${process.env.GAE_VERSION}\n
-                            デプロイID: ${process.env.GAE_DEPLOYMENT_ID}\n
-                            ポート: ${process.env.PORT}`
+                    text:  `バージョン: ${process.env.GAE_VERSION}\nデプロイID: ${process.env.GAE_DEPLOYMENT_ID}\nポート: ${process.env.PORT}`
                 }
             }
             if(command === "get") {

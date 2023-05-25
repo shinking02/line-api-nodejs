@@ -5,13 +5,14 @@ import { load } from "ts-dotenv";
 const env = load({
     CHANNEL_ACCESS_TOKEN: String,
     CHANNEL_SECRET: String,
-    PORT: Number
+    PORT: Number,
+    BUCKET_NAME: String
 });
 const config = {
     channelAccessToken: env.CHANNEL_ACCESS_TOKEN || "",
     channelSecret: env.CHANNEL_SECRET || ""
 };
-const fs = require("fs");
+const { Storage } = require('@google-cloud/storage');
 const port = env.PORT || "";
 const clientConfig: ClientConfig = config;
 const middlewareConfig: MiddlewareConfig = config;
@@ -19,7 +20,9 @@ const client = new Client(clientConfig);
 const app: Application = express();
 const filePath = "message.txt";
 const textCode = "utf8";
-
+const storage = new Storage();
+const bucket = storage.bucket(env.BUCKET_NAME);
+const file = bucket.file(filePath);
 app.get("/", async(_req: Request, res: Response): Promise<Response> => {
     return res.status(200).send({
         message: "success"
@@ -49,10 +52,10 @@ const textEventHandler = async(event: WebhookEvent): Promise<MessageAPIResponseB
             }
             if(command === "get") {
                 try {
-                    const fileContent = fs.readFileSync(filePath, textCode);
+                    const [content] = await file.download();
                     return {
                         type: "text",
-                        text: `[${fileContent}]がセットされています`
+                        text: `[${content}]がセットされています`
                     };
                 } catch (err) {
                     console.error(err);
@@ -68,7 +71,7 @@ const textEventHandler = async(event: WebhookEvent): Promise<MessageAPIResponseB
             }
         }
         try {
-            fs.writeFileSync(filePath, text);
+            await file.save(text, { contentType: textCode });
             return {
                 type: "text",
                 text: `[${text}]をセットしました`
@@ -100,9 +103,17 @@ app.post("/webhook", middleware(middlewareConfig), async(req: Request, res: Resp
 });
 
 app.get("/message", async(_req: Request, res: Response): Promise<Response> => {
-    return res.status(200).send({
-        message: fs.readFileSync(filePath, textCode)
-    });
+    try {
+        const [content] = await file.download();
+        return res.status(200).send({
+            message: content
+        });
+    } catch(err) {
+        return res.status(200).send({
+            message: err
+        });
+    }
+    
 });
 
 app.listen(port, () => {

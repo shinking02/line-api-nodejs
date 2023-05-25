@@ -38,13 +38,15 @@ const textEventHandler = async(event: WebhookEvent): Promise<MessageAPIResponseB
             if(command === "help") {
                 return {
                     type: "text",
-                    text: `/port: ポートを確認\n/help: コマンド一覧\n/get: セットされているテキストを確認`
+                    text: `/status: 状況を確認\n/help: コマンド一覧\n/get: セットされているテキストを確認`
                 }
             }
-            if(command === "port") {
+            if(command === "status") {
                 return {
                     type: "text",
-                    text: `現在のポートは${port}です`
+                    text:  `バージョン: ${process.env.GAE_VERSION}\n
+                            デプロイID: ${process.env.GAE_DEPLOYMENT_ID}\n
+                            ポート: ${process.env.PORT}`
                 }
             }
             if(command === "get") {

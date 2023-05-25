@@ -11,12 +11,14 @@ const config = {
     channelAccessToken: env.CHANNEL_ACCESS_TOKEN || "",
     channelSecret: env.CHANNEL_SECRET || ""
 };
+const fs = require("fs");
 const port = env.PORT || "";
 const clientConfig: ClientConfig = config;
 const middlewareConfig: MiddlewareConfig = config;
 const client = new Client(clientConfig);
 const app: Application = express();
-let data = "";
+const filePath = "message.txt";
+const textCode = "utf8";
 
 app.get("/", async(_req: Request, res: Response): Promise<Response> => {
     return res.status(200).send({
@@ -29,8 +31,8 @@ const textEventHandler = async(event: WebhookEvent): Promise<MessageAPIResponseB
         return;
     }
     const { replyToken } = event;
-    const response = ((): TextMessage => {
-        const { text } = event.message;
+    const { text } = event.message;
+    const response = (async(): Promise<TextMessage> => {
         if(text.charAt(0) === "/") {
             const command = text.substring(1);
             if(command === "help") {
@@ -40,15 +42,32 @@ const textEventHandler = async(event: WebhookEvent): Promise<MessageAPIResponseB
                 }
             }
             if(command === "port") {
+
                 return {
                     type: "text",
                     text: `現在のポートは${port}です`
                 }
             }
             if(command === "get") {
+
                 return {
                     type: "text",
-                    text: `[${data}]がセットされています`
+                    text: `現在のポートは${port}です`
+                }
+            }
+            if(command === "get") {
+                try {
+                    const fileContent = fs.readFileSync(filePath, textCode);
+                    return {
+                        type: "text",
+                        text: `[${fileContent}]がセットされています`
+                    };
+                } catch (err) {
+                    console.error(err);
+                    return {
+                          type: "text",
+                          text: `読み取りに失敗しました\n${err}`
+                    };
                 }
             }
             return {
@@ -56,13 +75,24 @@ const textEventHandler = async(event: WebhookEvent): Promise<MessageAPIResponseB
                 text: `入力された開発コマンド、${command}は未実装です`
             }
         }
-        data = text;
-        return {
-            type: "text",
-            text: `[${text}]がセットされました`
-        }
+        return new Promise<TextMessage>((resolve, reject) => {
+            fs.writeFile(filePath, text, textCode, (err: Error) => {
+                if(err) {
+                    console.error(err);
+                    reject({
+                        type: "text",
+                        text: `[${text}]のセットに失敗しました`
+                    });
+                } else {
+                    resolve({
+                        type: "text",
+                        text: `[${text}]をセットしました`
+                    });
+                }
+            });
+        });
     })();
-    return await client.replyMessage(replyToken, response);
+    return await client.replyMessage(replyToken, await response);
 };
 
 app.post("/webhook", middleware(middlewareConfig), async(req: Request, res: Response): Promise<Response> => {
@@ -82,7 +112,7 @@ app.post("/webhook", middleware(middlewareConfig), async(req: Request, res: Resp
 
 app.get("/message", async(_req: Request, res: Response): Promise<Response> => {
     return res.status(200).send({
-        message: data
+        message: fs.readFileSync(filePath, textCode)
     });
 });
 

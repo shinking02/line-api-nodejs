@@ -57,8 +57,8 @@ const textEventHandler = async(event: WebhookEvent): Promise<MessageAPIResponseB
                 } catch (err) {
                     console.error(err);
                     return {
-                          type: "text",
-                          text: `読み取りに失敗しました\n${err}`
+                        type: "text",
+                        text: `読み取りに失敗しました\n${err}`
                     };
                 }
             }
@@ -67,22 +67,19 @@ const textEventHandler = async(event: WebhookEvent): Promise<MessageAPIResponseB
                 text: `入力された開発コマンド、${command}は未実装です`
             }
         }
-        return new Promise<TextMessage>((resolve, reject) => {
-            fs.writeFile(filePath, text, textCode, (err: Error) => {
-                if(err) {
-                    console.error(err);
-                    reject({
-                        type: "text",
-                        text: `[${text}]のセットに失敗しました`
-                    });
-                } else {
-                    resolve({
-                        type: "text",
-                        text: `[${text}]をセットしました`
-                    });
-                }
-            });
-        });
+        try {
+            fs.writeFileSync(filePath, text);
+            return {
+                type: "text",
+                text: `[${text}]をセットしました`
+            };
+        } catch (err) {
+            console.error(err);
+            return {
+                type: "text",
+                text: `[${text}]のセットに失敗しました\n${err}`
+            };
+        }
     })();
     return await client.replyMessage(replyToken, await response);
 };

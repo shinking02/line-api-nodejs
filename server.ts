@@ -109,6 +109,7 @@ app.get("/message", async(_req: Request, res: Response): Promise<Response> => {
             message: content
         });
     } catch(err) {
+        console.error(err);
         return res.status(200).send({
             message: err
         });

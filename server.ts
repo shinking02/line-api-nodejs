@@ -42,14 +42,12 @@ const textEventHandler = async(event: WebhookEvent): Promise<MessageAPIResponseB
                 }
             }
             if(command === "port") {
-
                 return {
                     type: "text",
                     text: `現在のポートは${port}です`
                 }
             }
             if(command === "get") {
-
                 return {
                     type: "text",
                     text: `現在のポートは${port}です`

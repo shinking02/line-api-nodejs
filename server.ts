@@ -106,7 +106,7 @@ app.get("/message", async(_req: Request, res: Response): Promise<Response> => {
     try {
         const [content] = await file.download();
         return res.status(200).send({
-            message: content
+            message: content.toString()
         });
     } catch(err) {
         console.error(err);

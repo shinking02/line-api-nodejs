@@ -48,12 +48,6 @@ const textEventHandler = async(event: WebhookEvent): Promise<MessageAPIResponseB
                 }
             }
             if(command === "get") {
-                return {
-                    type: "text",
-                    text: `現在のポートは${port}です`
-                }
-            }
-            if(command === "get") {
                 try {
                     const fileContent = fs.readFileSync(filePath, textCode);
                     return {

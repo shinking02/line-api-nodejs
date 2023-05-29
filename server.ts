@@ -102,7 +102,7 @@ app.post("/webhook", middleware(middlewareConfig), async(req: Request, res: Resp
     return res.status(200).send();
 });
 
-app.get("/message", async(_req: Request, res: Response): Promise<Response> => {
+app.get("/esp32", async(_req: Request, res: Response): Promise<Response> => {
     try {
         const [content] = await file.download();
         return res.status(200).send({
